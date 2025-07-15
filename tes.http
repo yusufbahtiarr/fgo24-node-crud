@@ -1,0 +1,33 @@
+POST /auth/login
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "email": "yusuaf1@gmail.com",
+  "password": "111111"
+}
+
+###
+POST  /auth/register
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "username": "hansaaa",
+  "email": "hansaaaaaa@gmail.com",
+  "password": "1234"
+}
+
+###
+GET  /users/1
+Host: localhost:8080
+
+###
+GET  /users
+Host: localhost:8080
+
+###
+DELETE /users/3
+Host: localhost:8080
+
+

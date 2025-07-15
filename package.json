@@ -1,0 +1,14 @@
+{
+  "name": "fgo24-node-crud",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "lint": "eslint index.js src/**/*.js",
+    "lint:fix": "eslint index.js src/**/*.js --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
