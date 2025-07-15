@@ -65,13 +65,13 @@ exports.findAllUsers = function (search, sort, page = 1) {
   const paginatedResults = resultView.slice(startIndex, endIndex);
 
   return {
-    data: paginatedResults,
     pagination: {
       totalData,
       totalPages,
       currentPage,
       limit,
     },
+    data: paginatedResults,
   };
 };
 
