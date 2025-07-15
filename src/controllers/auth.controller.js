@@ -1,5 +1,7 @@
 const { constants: http } = require("http2");
 const { findUserByEmail, createUser } = require("../models/users.model");
+const { saveOTP, verifyOTP } = require("../models/auth.model");
+const { updateUser } = require("./users.controller");
 
 /**
  *
@@ -38,6 +40,13 @@ exports.login = function (req, res) {
   });
 };
 
+/**
+ *
+ * @param { import("express").Request} req
+ * @param { import("express").Response} res
+ * @returns
+ */
+
 exports.register = function (req, res) {
   const { email, username, password } = req.body;
 
@@ -65,5 +74,81 @@ exports.register = function (req, res) {
       username: newUser.username,
       email: newUser.email,
     },
+  });
+};
+
+/**
+ *
+ * @param { import("express").Request} req
+ * @param { import("express").Response} res
+ * @returns
+ */
+
+exports.forgotPassword = function (req, res) {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
+      success: false,
+      message: "Email tidak boleh kosong",
+    });
+  }
+  const user = findUserByEmail(email);
+  if (!user) {
+    return res.status(http.HTTP_STATUS_NOT_FOUND).json({
+      success: false,
+      message: "Email tidak terdaftar",
+    });
+  }
+
+  const otpUser = saveOTP(user.id);
+  if (!otpUser) {
+    return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Gagal melakukan forgot password",
+    });
+  }
+
+  res.status(http.HTTP_STATUS_OK).json({
+    success: true,
+    message:
+      "Berhasil melakukan forgot password. gunakan otp ini untuk melakuakn reset password",
+    data: "OTP: " + otpUser.otp,
+  });
+};
+
+exports.resetPassword = function (req, res) {
+  const { otp, new_password, confirm_password } = req.body;
+  if (!otp && !new_password && !confirm_password) {
+    return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
+      success: false,
+      message: "Otp, new password dan confirm password tidak boleh kosong",
+    });
+  }
+  if (new_password !== confirm_password) {
+    return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
+      success: false,
+      message: "new password dan confirm password tidak sama",
+    });
+  }
+  const userPassword = { password: new_password };
+  const userId = verifyOTP(otp);
+  if (!userId) {
+    res.status(http.HTTP_STATUS_NOT_FOUND).json({
+      success: false,
+      message: "OTP tidak terdaftar",
+    });
+  }
+
+  const user = updateUser(userId, userPassword);
+  if (!user) {
+    res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Gagal melakukan reset password",
+    });
+  }
+
+  res.status(http.HTTP_STATUS_OK).json({
+    success: true,
+    message: "Reset password berhasil",
   });
 };
