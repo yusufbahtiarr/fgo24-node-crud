@@ -33,3 +33,12 @@ exports.deleteUser = function (id) {
   usersData = users.filter((user) => user.id !== parseInt(id));
   return usersData !== lengthUser;
 };
+
+exports.updateUser = function (id, userData) {
+  const index = users.findIndex((user) => user.id === parseInt(id));
+  if (index !== -1) {
+    users[index] = { ...users[index], ...userData, id: parseInt(id) };
+    return users[index];
+  }
+  return null;
+};

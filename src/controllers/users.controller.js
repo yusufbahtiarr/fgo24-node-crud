@@ -3,6 +3,7 @@ const {
   findUserById,
   findAllUsers,
   deleteUser,
+  updateUser,
 } = require("../models/users.model");
 
 /**
@@ -89,5 +90,41 @@ exports.deleteUser = function (req, res) {
       username: user.username,
       email: user.email,
     },
+  });
+};
+
+/**
+ *
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+
+exports.updateUser = function (req, res) {
+  const { id } = req.params;
+  const updates = req.body;
+  if (!updates.email && !updates.username && !updates.password) {
+    return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
+      success: false,
+      message: "Username, email, atau password tidak ada yang terisi",
+    });
+  }
+  const user = findUserById(id);
+  if (!user) {
+    return res.status(http.HTTP_STATUS_NOT_FOUND).json({
+      success: false,
+      message: "Data user tidak ditemukan",
+    });
+  }
+  const userUpdate = updateUser(id, updates);
+  if (!userUpdate) {
+    return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Gagal mengupdate user",
+    });
+  }
+  res.status(http.HTTP_STATUS_OK).json({
+    success: true,
+    message: "Update user berhasil",
+    data: updates,
   });
 };

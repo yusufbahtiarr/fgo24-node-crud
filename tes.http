@@ -8,26 +8,52 @@ Content-Type: application/json
 }
 
 ###
-POST  /auth/register
+POST /auth/register
 Host: localhost:8080
 Content-Type: application/json
 
 {
-  "username": "hansaaa",
-  "email": "hansaaaaaa@gmail.com",
+  "username": "hansa",
+  "email": "hansa@gmail.com",
   "password": "1234"
 }
 
 ###
-GET  /users/1
+POST /auth/forgot-password
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "email": "hansa@gmail.com"
+}
+###
+POST /auth/reset-password
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "otp": "138030",
+  "new_password": "1111",
+  "confirm_password": "11111111"
+}
+
+###
+GET /users/2
 Host: localhost:8080
 
 ###
-GET  /users
+GET /users
 Host: localhost:8080
 
 ###
 DELETE /users/3
 Host: localhost:8080
 
-
+###
+PATCH /users/2
+Host: localhost:8080
+Content-Type: application/json
+{
+  "username": "dansa",
+  "email": "hansaaaaaa@gmail.com"
+}
