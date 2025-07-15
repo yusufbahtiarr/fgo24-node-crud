@@ -7,8 +7,20 @@ let users = [
   },
 ];
 
-exports.findAllUsers = function () {
-  return users;
+exports.findAllUsers = function (search) {
+  const resultView = users.map((user) => {
+    const { password, ...resultView } = user;
+    return resultView;
+  });
+  if (!search) {
+    return resultView;
+  }
+
+  result = resultView.filter((user) =>
+    user.email.toLowerCase().includes(search)
+  );
+
+  return result;
 };
 
 exports.findUserById = function (id) {

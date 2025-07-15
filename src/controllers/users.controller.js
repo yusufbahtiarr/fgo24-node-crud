@@ -39,23 +39,20 @@ exports.detailUser = function (req, res) {
  * @param {import("express").Response} res
  */
 
-exports.listAllUsers = function (_req, res) {
-  const users = findAllUsers();
+exports.listAllUsers = function (req, res) {
+  const search = req.query.search;
+  const users = findAllUsers(search);
   if (!users) {
     return res.status(http.HTTP_STATUS_NOT_FOUND).json({
       success: false,
       message: "Data user tidak ditemukan",
     });
   }
-  const usersRes = users.map((user) => {
-    const { password, ...usersRes } = user;
-    return usersRes;
-  });
 
   res.status(http.HTTP_STATUS_OK).json({
     success: true,
     message: "List all user",
-    result: usersRes,
+    result: users,
   });
 };
 

@@ -38,11 +38,11 @@ Content-Type: application/json
 }
 
 ###
-GET /users/2
+GET /users/1
 Host: localhost:8080
 
 ###
-GET /users
+GET /users?search=han
 Host: localhost:8080
 
 ###

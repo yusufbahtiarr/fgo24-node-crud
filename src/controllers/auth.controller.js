@@ -114,7 +114,7 @@ exports.forgotPassword = function (req, res) {
   res.status(http.HTTP_STATUS_OK).json({
     success: true,
     message:
-      "Berhasil melakukan forgot password. gunakan otp ini untuk melakuakn reset password",
+      "Berhasil melakukan forgot password. Gunakan otp ini untuk melakukan reset password",
     data: "OTP: " + otpUser.otp,
   });
 };
