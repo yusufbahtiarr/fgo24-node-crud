@@ -30,14 +30,24 @@ exports.createUser = function (userData) {
 
 exports.deleteUser = function (id) {
   lengthUser = users.length;
-  usersData = users.filter((user) => user.id !== parseInt(id));
-  return usersData !== lengthUser;
+  users = users.filter((user) => user.id !== parseInt(id));
+  return users.length !== lengthUser;
 };
 
 exports.updateUser = function (id, userData) {
   const index = users.findIndex((user) => user.id === parseInt(id));
   if (index !== -1) {
     users[index] = { ...users[index], ...userData, id: parseInt(id) };
+    return users[index];
+  }
+  return null;
+};
+
+exports.updatePassword = function (id, newPassword) {
+  parsedId = parseInt(id);
+  const index = users.findIndex((user) => user.id === parsedId);
+  if (index !== -1) {
+    users[index] = { ...users[index], password: newPassword, id: parsedId };
     return users[index];
   }
   return null;

@@ -3,7 +3,7 @@ Host: localhost:8080
 Content-Type: application/json
 
 {
-  "email": "yusuaf1@gmail.com",
+  "email": "yusuf1@gmail.com",
   "password": "111111"
 }
 
@@ -32,9 +32,9 @@ Host: localhost:8080
 Content-Type: application/json
 
 {
-  "otp": "138030",
-  "new_password": "1111",
-  "confirm_password": "11111111"
+  "otp": "557261",
+  "new_password": "2222",
+  "confirm_password": "2222"
 }
 
 ###

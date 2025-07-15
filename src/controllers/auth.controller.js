@@ -1,7 +1,10 @@
 const { constants: http } = require("http2");
-const { findUserByEmail, createUser } = require("../models/users.model");
+const {
+  findUserByEmail,
+  createUser,
+  updatePassword,
+} = require("../models/users.model");
 const { saveOTP, verifyOTP } = require("../models/auth.model");
-const { updateUser } = require("./users.controller");
 
 /**
  *
@@ -130,16 +133,15 @@ exports.resetPassword = function (req, res) {
       message: "new password dan confirm password tidak sama",
     });
   }
-  const userPassword = { password: new_password };
   const userId = verifyOTP(otp);
   if (!userId) {
     res.status(http.HTTP_STATUS_NOT_FOUND).json({
       success: false,
-      message: "OTP tidak terdaftar",
+      message: "OTP tidak valid",
     });
   }
 
-  const user = updateUser(userId, userPassword);
+  const user = updatePassword(userId, new_password);
   if (!user) {
     res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
       success: false,

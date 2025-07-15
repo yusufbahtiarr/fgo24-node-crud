@@ -1,3 +1,5 @@
+const { Users } = require("./users.model");
+
 let otpUser = [];
 
 exports.saveOTP = function (id) {
@@ -11,6 +13,13 @@ exports.saveOTP = function (id) {
 };
 
 exports.verifyOTP = function (otp) {
-  const userOtp = otpUser.find((user) => user.otp === parseInt(otp));
+  parsedOTP = parseInt(otp);
+  const index = otpUser.findIndex((item) => item.otp === parsedOTP);
+  if (index === -1) {
+    return null;
+  }
+  const userOtp = otpUser[index];
+  otpUser.splice(index, 1);
+
   return userOtp.userid;
 };
