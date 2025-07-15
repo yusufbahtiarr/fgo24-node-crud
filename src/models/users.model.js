@@ -5,22 +5,58 @@ let users = [
     email: "yusuf1@gmail.com",
     password: "111111",
   },
+  {
+    id: 2,
+    username: "ganri1",
+    email: "ganri1@gmail.com",
+    password: "111111",
+  },
+  {
+    id: 3,
+    username: "sandi1",
+    email: "sandi1@gmail.com",
+    password: "111111",
+  },
+  {
+    id: 4,
+    username: "ulfa1",
+    email: "ulfa1@gmail.com",
+    password: "111111",
+  },
+  {
+    id: 5,
+    username: "dimas2",
+    email: "dimas2@gmail.com",
+    password: "111111",
+  },
+  {
+    id: 6,
+    username: "damar",
+    email: "damar@gmail.com",
+    password: "111111",
+  },
 ];
 
-exports.findAllUsers = function (search) {
-  const resultView = users.map((user) => {
-    const { password, ...resultView } = user;
-    return resultView;
+exports.findAllUsers = function (search, sort) {
+  let resultView = users.map((user) => {
+    const { password, ...userView } = user;
+    return userView;
   });
-  if (!search) {
-    return resultView;
+
+  if (search) {
+    lowerSearch = search.toLowerCase();
+    resultView = resultView.filter((user) =>
+      user.email.toLowerCase().includes(lowerSearch)
+    );
   }
 
-  result = resultView.filter((user) =>
-    user.email.toLowerCase().includes(search)
-  );
+  if (sort === "ascending") {
+    resultView.sort((a, b) => a.email.localeCompare(b.email));
+  } else if (sort === "descending") {
+    resultView.sort((a, b) => b.email.localeCompare(a.email));
+  }
 
-  return result;
+  return resultView;
 };
 
 exports.findUserById = function (id) {

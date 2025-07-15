@@ -42,7 +42,7 @@ GET /users/1
 Host: localhost:8080
 
 ###
-GET /users?search=han
+GET /users?search=an&sort=descending
 Host: localhost:8080
 
 ###
