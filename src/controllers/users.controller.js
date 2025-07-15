@@ -42,7 +42,8 @@ exports.detailUser = function (req, res) {
 exports.listAllUsers = function (req, res) {
   const search = req.query.search;
   const sorting = req.query.sort;
-  const users = findAllUsers(search, sorting);
+  const page = req.query.page;
+  const users = findAllUsers(search, sorting, page);
   if (!users) {
     return res.status(http.HTTP_STATUS_NOT_FOUND).json({
       success: false,

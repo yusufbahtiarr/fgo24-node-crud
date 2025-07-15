@@ -37,7 +37,7 @@ let users = [
   },
 ];
 
-exports.findAllUsers = function (search, sort) {
+exports.findAllUsers = function (search, sort, page = 1) {
   let resultView = users.map((user) => {
     const { password, ...userView } = user;
     return userView;
@@ -55,8 +55,24 @@ exports.findAllUsers = function (search, sort) {
   } else if (sort === "descending") {
     resultView.sort((a, b) => b.email.localeCompare(a.email));
   }
+  const limit = 5;
+  const totalData = resultView.length;
+  const totalPages = Math.ceil(totalData / limit);
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const startIndex = (currentPage - 1) * limit;
+  const endIndex = Math.min(startIndex + limit, totalData);
 
-  return resultView;
+  const paginatedResults = resultView.slice(startIndex, endIndex);
+
+  return {
+    data: paginatedResults,
+    pagination: {
+      totalData,
+      totalPages,
+      currentPage,
+      limit,
+    },
+  };
 };
 
 exports.findUserById = function (id) {

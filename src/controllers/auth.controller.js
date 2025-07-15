@@ -24,8 +24,6 @@ exports.login = function (req, res) {
   }
 
   const userLogin = findUserByEmail(email);
-  console.log(userLogin);
-
   if (!userLogin || userLogin.password !== password) {
     return res.status(http.HTTP_STATUS_UNAUTHORIZED).json({
       success: false,
