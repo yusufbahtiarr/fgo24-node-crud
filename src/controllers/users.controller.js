@@ -1,6 +1,7 @@
 const { constants: http } = require("http2");
 const path = require("path");
 const fs = require("fs");
+const fsPromises = fs.promises;
 const {
   findUserById,
   findAllUsers,
@@ -178,7 +179,7 @@ exports.updateUser = async function (req, res) {
     if (oldPicture) {
       const oldPath = path.join("uploads", "profiles", oldPicture);
       try {
-        fs.unlinkSync(oldPath);
+        await fsPromises.unlink(oldPath);
       } catch (err) {
         console.error("Gagal menghapus file lama:", err.message);
       }
@@ -187,7 +188,7 @@ exports.updateUser = async function (req, res) {
     updateResponse.picture = picture.filename;
   }
 
-  const userUpdate = updateUser(id, updates, picture);
+  const userUpdate = updateUser(id, user);
   if (!userUpdate) {
     return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
       success: false,
