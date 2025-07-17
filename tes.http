@@ -38,40 +38,42 @@ Content-Type: application/json
 }
 
 ###
-GET /users/7
+GET /users/4
 Host: localhost:8080
 
 ###
-GET /users?search=an&sort=descending&page=2
+GET /users
 Host: localhost:8080
 
 ###
-DELETE /users/3
+DELETE /users/5
 Host: localhost:8080
 
 ###
-PATCH /users/7 HTTP/1.1
+PATCH /users/8 HTTP/1.1
 Host: localhost:8080
 Content-Type: multipart/form-data; boundary=----WebkitBoundary
 
 ------WebkitBoundary
 Content-Disposition: form-data; name="username"
 
-yusuf33
+yusuf34
 ------WebkitBoundary
 Content-Disposition: form-data; name="email"
 
-yusuf33@gmail.com
+yusuf34@gmail.com
 ------WebkitBoundary
 Content-Disposition: form-data; name="password"
 
-yusuf33
+yusuf34
 ------WebkitBoundary
 Content-Disposition: form-data; name="picture"; filename="ccc.png"
 Content-Type: image/png
 
 < ./ppp.png
 ------WebkitBoundary--
+
+###
 
 ###
 POST /users HTTP/1.1
@@ -81,15 +83,15 @@ Content-Type: multipart/form-data; boundary=----WebkitBoundary
 ------WebkitBoundary
 Content-Disposition: form-data; name="username"
 
-yusuf22
+yusuf24
 ------WebkitBoundary
 Content-Disposition: form-data; name="email"
 
-yusuf22@gmail.com
+yusuf24@gmail.com
 ------WebkitBoundary
 Content-Disposition: form-data; name="password"
 
-yusuf22
+yusuf24
 ------WebkitBoundary
 Content-Disposition: form-data; name="picture"; filename="ccc.png"
 Content-Type: image/png

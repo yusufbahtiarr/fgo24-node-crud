@@ -11,6 +11,8 @@ const {
   updateUser,
 } = require("../db/old/users.model");
 const { User } = require("../models");
+const { profile } = require("console");
+
 /**
  *
  * @param {import("express").Request} req
@@ -129,37 +131,44 @@ exports.createUser = async function (req, res) {
 
 exports.deleteUser = async function (req, res) {
   const { id } = req.params;
-  const user = await User.findByPk(parseInt(id));
-  if (!user) {
-    return res.status(http.HTTP_STATUS_NOT_FOUND).json({
+  try {
+    const user = await User.findByPk(parseInt(id));
+    if (!user) {
+      return res.status(http.HTTP_STATUS_NOT_FOUND).json({
+        success: false,
+        message: "Data user tidak tidak ditemukan",
+      });
+    }
+    const deletedUser = await User.destroy({
+      where: {
+        id: parseInt(id),
+      },
+      returning: ["true"],
+    });
+
+    if (deletedUser === 0) {
+      return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Gagal menghapus user",
+      });
+    }
+    res.status(http.HTTP_STATUS_OK).json({
+      success: true,
+      message: "data user berhasil di hapus",
+      data: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        picture: user.picture,
+      },
+    });
+  } catch (error) {
+    return res.status(http.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Data user tidak tidak ditemukan",
+      message: "Terjadi kesalahan server saat menghapus user.",
+      error: error.message,
     });
   }
-
-  const deletedUser = await User.destroy({
-    where: {
-      id: parseInt(id),
-    },
-    returning: ["true"],
-  });
-
-  if (!deletedUser) {
-    return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: "Gagal menghapus user",
-    });
-  }
-  res.status(http.HTTP_STATUS_OK).json({
-    success: true,
-    message: "data user berhasil di hapus",
-    data: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      picture: user.picture,
-    },
-  });
 };
 
 /**
@@ -170,71 +179,59 @@ exports.deleteUser = async function (req, res) {
 
 exports.updateUser = async function (req, res) {
   const { id } = req.params;
-  const updates = req.body;
   const picture = req.file;
-  if (!updates.email && !updates.username && !updates.password) {
+  const fillable = ["username", "email", "password"];
+  const newData = {};
+  fillable.forEach((field) => {
+    newData[field] = req.body[field];
+  });
+
+  if (Object.keys(newData).length === 0 && !picture) {
     return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
       success: false,
-      message: "Username, email, atau password tidak ada yang terisi",
-    });
-  }
-  const user = findUserById(id);
-  if (!user) {
-    return res.status(http.HTTP_STATUS_NOT_FOUND).json({
-      success: false,
-      message: "Data user tidak ditemukan",
+      message: "Tidak ada data yang diupdate",
     });
   }
 
-  const updateResponse = {};
-
-  if (updates.username) {
-    user.username = updates.username;
-    updateResponse.username = updates.username;
-  }
-  if (updates.email) {
-    user.email = updates.email;
-    updateResponse.email = updates.email;
-  }
-  if (updates.password) {
-    user.password = updates.password;
-  }
-  if (picture) {
-    const oldPicture = user.picture;
-    if (oldPicture) {
-      const oldPath = path.join("uploads", "profiles", oldPicture);
-      try {
-        await fsPromises.unlink(oldPath);
-      } catch (err) {
-        console.error("Gagal menghapus file lama:", err.message);
-      }
+  try {
+    const user = await User.findByPk(parseInt(id));
+    if (!user) {
+      return res.status(http.HTTP_STATUS_NOT_FOUND).json({
+        success: false,
+        message: "Data user tidak ditemukan",
+      });
     }
-    user.picture = picture.filename;
-    updateResponse.picture = picture.filename;
-  }
 
-  const userUpdate = updateUser(id, user);
-  if (!userUpdate) {
-    return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: "Gagal mengupdate user",
+    if (profile) {
+      if (user.picture) {
+        const oldPath = path.join("uploads", "profiles", user.picture);
+        try {
+          await fsPromises.unlink(oldPath);
+        } catch (error) {
+          console.error("Gagal menghapus file lama:", error.message);
+        }
+      }
+      newData.picture = picture.filename;
+    }
+
+    const updaterUser = User.update(newData, {
+      where: {
+        id: parseInt(id),
+      },
+      returning: true,
     });
-  }
 
-  res.status(http.HTTP_STATUS_OK).json({
-    success: true,
-    message: "Update user berhasil",
-    data: updateResponse,
-  });
+    if (updateUser === 0) {
+      return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Gagal mengupdate user",
+      });
+    }
+
+    res.status(http.HTTP_STATUS_OK).json({
+      success: true,
+      message: "Update user berhasil",
+      data: newData,
+    });
+  } catch (error) {}
 };
-
-// test sequelize updateUser
-// const updateUsers = await User.update;
-
-// const deleteUser = await User.destroy({
-//   where: {
-//     id: parseInt(id),
-//   },
-//   returning: true,
-// });
-// return res.json({});
