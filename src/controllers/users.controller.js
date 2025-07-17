@@ -2,6 +2,8 @@ const { constants: http } = require("http2");
 const {
   findUserById,
   findAllUsers,
+  findUserByEmail,
+  createUser,
   deleteUser,
   updateUser,
 } = require("../models/users.model");
@@ -29,6 +31,7 @@ exports.detailUser = function (req, res) {
       id: user.id,
       username: user.username,
       email: user.email,
+      picture: user.picture,
     },
   });
 };
@@ -57,6 +60,52 @@ exports.listAllUsers = function (req, res) {
     result: users,
   });
 };
+
+/**
+ *
+ * @param { import("express").Request} req
+ * @param { import("express").Response} res
+ * @returns
+ */
+
+exports.createUser = function (req, res) {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
+      success: false,
+      message: "Username, Email, dan password wajib diisi",
+    });
+  }
+
+  const userLogin = findUserByEmail(email);
+  if (userLogin) {
+    return res.status(http.HTTP_STATUS_CONFLICT).json({
+      success: true,
+      message: "Email sudah terdaftar",
+    });
+  }
+
+  const picture = req.file ? req.file.filename : null;
+  const newUser = createUser({ username, email, password, picture });
+  console.log("newuser", newUser);
+
+  return res.status(http.HTTP_STATUS_OK).json({
+    success: true,
+    message: "Create user berhasil",
+    result: {
+      id: newUser.id,
+      email: newUser.email,
+      picture: newUser.picture,
+    },
+  });
+};
+
+/**
+ *
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 
 /**
  *
@@ -101,6 +150,7 @@ exports.deleteUser = function (req, res) {
 exports.updateUser = function (req, res) {
   const { id } = req.params;
   const updates = req.body;
+  const picture = req.file ? req.file.filename : null;
   if (!updates.email && !updates.username && !updates.password) {
     return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
       success: false,
@@ -114,7 +164,8 @@ exports.updateUser = function (req, res) {
       message: "Data user tidak ditemukan",
     });
   }
-  const userUpdate = updateUser(id, updates);
+
+  const userUpdate = updateUser(id, updates, picture);
   if (!userUpdate) {
     return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
       success: false,

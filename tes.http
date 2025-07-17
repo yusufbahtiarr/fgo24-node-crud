@@ -38,7 +38,7 @@ Content-Type: application/json
 }
 
 ###
-GET /users/1
+GET /users/7
 Host: localhost:8080
 
 ###
@@ -57,3 +57,27 @@ Content-Type: application/json
   "username": "dansa",
   "email": "hansaaaaaa@gmail.com"
 }
+
+###
+POST /users HTTP/1.1
+Host: localhost:8080
+Content-Type: multipart/form-data; boundary=----WebkitBoundary
+
+------WebkitBoundary
+Content-Disposition: form-data; name="username"
+
+yusuf22
+------WebkitBoundary
+Content-Disposition: form-data; name="email"
+
+yusuf22@gmail.com
+------WebkitBoundary
+Content-Disposition: form-data; name="password"
+
+yusuf22
+------WebkitBoundary
+Content-Disposition: form-data; name="picture"; filename="ccc.png"
+Content-Type: image/png
+
+< ./ccc.png
+------WebkitBoundary--
