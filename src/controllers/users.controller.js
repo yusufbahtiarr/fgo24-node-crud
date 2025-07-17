@@ -127,9 +127,9 @@ exports.createUser = async function (req, res) {
  * @param {import("express").Response} res
  */
 
-exports.deleteUser = function (req, res) {
+exports.deleteUser = async function (req, res) {
   const { id } = req.params;
-  const user = findUserById(id);
+  const user = await User.findByPk(parseInt(id));
   if (!user) {
     return res.status(http.HTTP_STATUS_NOT_FOUND).json({
       success: false,
@@ -137,8 +137,14 @@ exports.deleteUser = function (req, res) {
     });
   }
 
-  const del = deleteUser(id);
-  if (!del) {
+  const deletedUser = await User.destroy({
+    where: {
+      id: parseInt(id),
+    },
+    returning: ["true"],
+  });
+
+  if (!deletedUser) {
     return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Gagal menghapus user",
@@ -151,6 +157,7 @@ exports.deleteUser = function (req, res) {
       id: user.id,
       username: user.username,
       email: user.email,
+      picture: user.picture,
     },
   });
 };
