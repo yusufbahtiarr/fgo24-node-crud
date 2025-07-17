@@ -73,7 +73,7 @@ exports.listAllUsers = async function (req, res) {
  * @returns
  */
 
-exports.createUser = function (req, res) {
+exports.createUser = async function (req, res) {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
@@ -83,26 +83,42 @@ exports.createUser = function (req, res) {
     });
   }
 
-  const userLogin = findUserByEmail(email);
-  if (userLogin) {
-    return res.status(http.HTTP_STATUS_CONFLICT).json({
+  try {
+    const existsUser = await User.findOne({
+      where: { email: email },
+    });
+
+    if (existsUser)
+      return res.status(http.HTTP_STATUS_CONFLICT).json({
+        success: false,
+        message: "Email sudah terdaftar",
+      });
+
+    const picture = req.file ? req.file.filename : null;
+    const newUser = await User.create({
+      username,
+      email,
+      password,
+      picture,
+    });
+
+    return res.status(http.HTTP_STATUS_CREATED).json({
       success: true,
-      message: "Email sudah terdaftar",
+      message: "User baru berhasil dibuat",
+      result: {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        picture: newUser.picture,
+      },
+    });
+  } catch (error) {
+    return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "User baru gagal dibuat.",
+      error: error.message,
     });
   }
-
-  const picture = req.file ? req.file.filename : null;
-  const newUser = createUser({ username, email, password, picture });
-
-  return res.status(http.HTTP_STATUS_OK).json({
-    success: true,
-    message: "Create user berhasil",
-    result: {
-      id: newUser.id,
-      email: newUser.email,
-      picture: newUser.picture,
-    },
-  });
 };
 
 /**
