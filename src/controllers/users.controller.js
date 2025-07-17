@@ -4,13 +4,13 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 const {
   findUserById,
-  findAllUsers,
+  // findAllUsers,
   findUserByEmail,
   createUser,
   deleteUser,
   updateUser,
-} = require("../models/users.model");
-
+} = require("../db/old/users.model");
+const { User } = require("../models");
 /**
  *
  * @param {import("express").Request} req
@@ -45,11 +45,12 @@ exports.detailUser = function (req, res) {
  * @param {import("express").Response} res
  */
 
-exports.listAllUsers = function (req, res) {
-  const search = req.query.search;
-  const sorting = req.query.sort;
-  const page = req.query.page;
-  const users = findAllUsers(search, sorting, page);
+exports.listAllUsers = async function (req, res) {
+  // const search = req.query.search;
+  // const sorting = req.query.sort;
+  // const page = req.query.page;
+  // const users = findAllUsers(search, sorting, page);
+  const users = await User.findAll();
   if (!users) {
     return res.status(http.HTTP_STATUS_NOT_FOUND).json({
       success: false,
@@ -202,3 +203,14 @@ exports.updateUser = async function (req, res) {
     data: updateResponse,
   });
 };
+
+// test sequelize updateUser
+// const updateUsers = await User.update;
+
+// const deleteUser = await User.destroy({
+//   where: {
+//     id: parseInt(id),
+//   },
+//   returning: true,
+// });
+// return res.json({});

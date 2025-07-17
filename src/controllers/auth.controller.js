@@ -3,8 +3,8 @@ const {
   findUserByEmail,
   createUser,
   updatePassword,
-} = require("../models/users.model");
-const { saveOTP, verifyOTP } = require("../models/auth.model");
+} = require("../db/old/users.model");
+const { saveOTP, verifyOTP } = require("../db/old/auth.model");
 
 /**
  *
