@@ -50,13 +50,28 @@ DELETE /users/3
 Host: localhost:8080
 
 ###
-PATCH /users/2
+PATCH /users/7 HTTP/1.1
 Host: localhost:8080
-Content-Type: application/json
-{
-  "username": "dansa",
-  "email": "hansaaaaaa@gmail.com"
-}
+Content-Type: multipart/form-data; boundary=----WebkitBoundary
+
+------WebkitBoundary
+Content-Disposition: form-data; name="username"
+
+yusuf33
+------WebkitBoundary
+Content-Disposition: form-data; name="email"
+
+yusuf33@gmail.com
+------WebkitBoundary
+Content-Disposition: form-data; name="password"
+
+yusuf33
+------WebkitBoundary
+Content-Disposition: form-data; name="picture"; filename="ccc.png"
+Content-Type: image/png
+
+< ./ppp.png
+------WebkitBoundary--
 
 ###
 POST /users HTTP/1.1

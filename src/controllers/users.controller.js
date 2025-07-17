@@ -1,4 +1,6 @@
 const { constants: http } = require("http2");
+const path = require("path");
+const fs = require("fs");
 const {
   findUserById,
   findAllUsers,
@@ -88,7 +90,6 @@ exports.createUser = function (req, res) {
 
   const picture = req.file ? req.file.filename : null;
   const newUser = createUser({ username, email, password, picture });
-  console.log("newuser", newUser);
 
   return res.status(http.HTTP_STATUS_OK).json({
     success: true,
@@ -100,12 +101,6 @@ exports.createUser = function (req, res) {
     },
   });
 };
-
-/**
- *
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- */
 
 /**
  *
@@ -147,10 +142,10 @@ exports.deleteUser = function (req, res) {
  * @param {import("express").Response} res
  */
 
-exports.updateUser = function (req, res) {
+exports.updateUser = async function (req, res) {
   const { id } = req.params;
   const updates = req.body;
-  const picture = req.file ? req.file.filename : null;
+  const picture = req.file;
   if (!updates.email && !updates.username && !updates.password) {
     return res.status(http.HTTP_STATUS_BAD_REQUEST).json({
       success: false,
@@ -165,6 +160,33 @@ exports.updateUser = function (req, res) {
     });
   }
 
+  const updateResponse = {};
+
+  if (updates.username) {
+    user.username = updates.username;
+    updateResponse.username = updates.username;
+  }
+  if (updates.email) {
+    user.email = updates.email;
+    updateResponse.email = updates.email;
+  }
+  if (updates.password) {
+    user.password = updates.password;
+  }
+  if (picture) {
+    const oldPicture = user.picture;
+    if (oldPicture) {
+      const oldPath = path.join("uploads", "profiles", oldPicture);
+      try {
+        fs.unlinkSync(oldPath);
+      } catch (err) {
+        console.error("Gagal menghapus file lama:", err.message);
+      }
+    }
+    user.picture = picture.filename;
+    updateResponse.picture = picture.filename;
+  }
+
   const userUpdate = updateUser(id, updates, picture);
   if (!userUpdate) {
     return res.status(http.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({
@@ -172,9 +194,10 @@ exports.updateUser = function (req, res) {
       message: "Gagal mengupdate user",
     });
   }
+
   res.status(http.HTTP_STATUS_OK).json({
     success: true,
     message: "Update user berhasil",
-    data: updates,
+    data: updateResponse,
   });
 };
