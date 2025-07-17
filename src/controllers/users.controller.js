@@ -17,9 +17,10 @@ const { User } = require("../models");
  * @param {import("express").Response} res
  */
 
-exports.detailUser = function (req, res) {
+exports.detailUser = async function (req, res) {
   const { id } = req.params;
-  const user = findUserById(id);
+  // const user = findUserById(id);
+  const user = await User.findByPk(parseInt(id));
   if (!user) {
     return res.status(http.HTTP_STATUS_NOT_FOUND).json({
       success: false,
@@ -46,9 +47,9 @@ exports.detailUser = function (req, res) {
  */
 
 exports.listAllUsers = async function (req, res) {
-  // const search = req.query.search;
-  // const sorting = req.query.sort;
-  // const page = req.query.page;
+  const search = req.query.search;
+  const sort = req.query.sort;
+  const page = req.query.page;
   // const users = findAllUsers(search, sorting, page);
   const users = await User.findAll();
   if (!users) {
